@@ -21,12 +21,13 @@ func UpdateByID(c *fiber.Ctx) error {
 	if err != nil {
 		return c.JSON(fiber.Map{
 			"success": false,
-			"message": err,
+			"message": err.Error(),
 		})
 	}
 
 	data := make(map[string]string)
-	message := map[string]interface{}
+	var messageVals []validator.ValidatorMessage
+	var messages []string
 	for _, v := range formArr {
 		if c.FormValue(v) != "" {
 			data[v] = c.FormValue(v)
@@ -36,35 +37,104 @@ func UpdateByID(c *fiber.Ctx) error {
 	for k, v := range data {
 		switch k {
 		case "name":
-			message[k] = validator.GetValidate(k, v)
+			messageVals = append(messageVals, validator.Name(v))
 		case "startDate":
-			message[k] = validator.GetValidate(k, v)
+			messageVals = append(messageVals, validator.StartDate(v))
 		case "endDate":
-			message[k] = validator.GetValidate(k, v)
-		case "duration":
-			message[k] = validator.GetValidate(k, v)
+			messageVals = append(messageVals, validator.EndDate(v, constructionStage.StartDate))
 		case "durationUnit":
-			message[k] = validator.GetValidate(k, v)
+			messageVals = append(messageVals, validator.DurationUnit(v))
 		case "color":
-			message[k] = validator.GetValidate(k, v)
+			messageVals = append(messageVals, validator.Color(v))
 		case "externalId":
-			message[k] = validator.GetValidate(k, v)
+			messageVals = append(messageVals, validator.ExternalId(v))
 		case "status":
-			message[k] = validator.GetValidate(k, v)
+			messageVals = append(messageVals, validator.Status(v))
 		}
 	}
 
+	for _, v := range messageVals {
+		if v.Error == true {
+			messages = append(messages, v.Message)
+		}
+	}
+
+	if len(messages) > 0 {
+		return c.JSON(fiber.Map{
+			"success": false,
+			"message": messages,
+		})
+	}
+
+	for k, v := range data {
+		switch k {
+		case "name":
+			constructionStage.Name = v
+		case "startDate":
+			constructionStage.StartDate = v
+		case "endDate":
+			constructionStage.EndDate = v
+		case "durationUnit":
+			constructionStage.DurationUnit = v
+		case "color":
+			constructionStage.Color = v
+		case "externalId":
+			constructionStage.ExternalID = v
+		case "status":
+			constructionStage.Status = v
+		}
+	}
+
+	constructionStage.Duration = validator.CalculateDuration(constructionStage.StartDate, constructionStage.EndDate, constructionStage.DurationUnit)
+
+	err = DbUpdateSingle(constructionStage)
 	if err != nil {
 		return c.JSON(fiber.Map{
 			"success": false,
-			"message": "ID'yi tamsayıya çevirirken hata oluştu.",
+			"message": err.Error(),
 		})
 	}
 
 	return c.JSON(fiber.Map{
-		"id":   idInt,
-		"Data": data,
-		"Name": constructionStage,
+		"success": true,
+		"message": "Güncelleme başarılı.",
 	})
 
+}
+
+func DbUpdateSingle(constructionStage ConstructionStage) error {
+	stmt, err := DB.Prepare(`
+		UPDATE construction_stages
+		SET
+			name = ?,
+			start_date = ?,
+			end_date = ?,
+			duration = ?,
+			durationUnit = ?,
+			color = ?,
+			externalId = ?,
+			status = ?
+		WHERE ID = ?
+	`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(
+		constructionStage.Name,
+		constructionStage.StartDate,
+		constructionStage.EndDate,
+		constructionStage.Duration,
+		constructionStage.DurationUnit,
+		constructionStage.Color,
+		constructionStage.ExternalID,
+		constructionStage.Status,
+		constructionStage.ID,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

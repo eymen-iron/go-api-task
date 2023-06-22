@@ -2,6 +2,7 @@ package router
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"strconv"
 )
@@ -18,10 +19,11 @@ func GetSingle(c *fiber.Ctx) error {
 
 	constructionStage, err := DbGetSingle(idInt)
 	if err != nil {
-		return c.JSON(fiber.Map{
+		response := fiber.Map{
 			"success": false,
-			"message": err,
-		})
+			"message": err.Error(),
+		}
+		return c.JSON(response)
 	}
 
 	return c.JSON(constructionStage)
@@ -39,6 +41,9 @@ func DbGetSingle(id int) (ConstructionStage, error) {
 
 	err = rows.QueryRow(id).Scan(&constructionStage.ID, &constructionStage.Name, &startDate, &endDate, &duration, &durationUnit, &color, &externalID, &status)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return constructionStage, fmt.Errorf("ürün bulunamadı")
+		}
 		return constructionStage, err
 	}
 
@@ -67,5 +72,4 @@ func DbGetSingle(id int) (ConstructionStage, error) {
 		constructionStage.DurationUnit = durationUnit.String
 	}
 	return constructionStage, nil
-
 }
