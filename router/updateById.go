@@ -13,7 +13,7 @@ func UpdateByID(c *fiber.Ctx) error {
 	if err != nil {
 		return c.JSON(fiber.Map{
 			"success": false,
-			"message": "ID'yi tamsayıya çevirirken hata oluştu.",
+			"message": "The ID could not be converted to an integer.",
 		})
 	}
 
@@ -97,7 +97,7 @@ func UpdateByID(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"success": true,
-		"message": "Güncelleme başarılı.",
+		"message": "Construction stage updated successfully.",
 	})
 
 }

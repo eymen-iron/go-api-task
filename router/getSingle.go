@@ -13,7 +13,7 @@ func GetSingle(c *fiber.Ctx) error {
 	if err != nil {
 		return c.JSON(fiber.Map{
 			"success": false,
-			"message": "ID'yi tamsayıya çevirirken hata oluştu.",
+			"message": "The ID could not be converted to an integer.",
 		})
 	}
 
@@ -42,7 +42,7 @@ func DbGetSingle(id int) (ConstructionStage, error) {
 	err = rows.QueryRow(id).Scan(&constructionStage.ID, &constructionStage.Name, &startDate, &endDate, &duration, &durationUnit, &color, &externalID, &status)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return constructionStage, fmt.Errorf("ürün bulunamadı")
+			return constructionStage, fmt.Errorf("No construction stage found")
 		}
 		return constructionStage, err
 	}

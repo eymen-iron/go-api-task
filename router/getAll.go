@@ -12,7 +12,7 @@ func GetAll(c *fiber.Ctx) error {
 	if err != nil {
 		return c.JSON(fiber.Map{
 			"success": false,
-			"message": fmt.Sprintf("Veritabanı hatası: %s", err.Error()),
+			"message": fmt.Sprintf("Database Error: %s", err.Error()),
 		})
 	}
 
@@ -27,7 +27,7 @@ func GetAll(c *fiber.Ctx) error {
 		if err != nil {
 			return c.JSON(fiber.Map{
 				"success": false,
-				"message": fmt.Sprintf("Veritabanı hatası: %s", err.Error()),
+				"message": fmt.Sprintf("Database Error: %s", err.Error()),
 			})
 		}
 		if color.Valid {
@@ -61,7 +61,7 @@ func GetAll(c *fiber.Ctx) error {
 	if err = rows.Err(); err != nil {
 		return c.JSON(fiber.Map{
 			"success": false,
-			"message": fmt.Sprintf("Veritabanı hatası: %s", err.Error()),
+			"message": fmt.Sprintf("Database Error: %s", err.Error()),
 		})
 	}
 	return c.JSON(constructionStages)
