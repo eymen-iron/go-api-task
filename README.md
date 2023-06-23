@@ -1,8 +1,6 @@
-# go-api-task
-
 # API Task
 
-This project implements an API task with CRUD operations using the Go programming language. It was initially requested to be developed in PHP, but it has been converted to Go for implementation.
+This project implements an API task with RESTful operations using the Go programming language. It was initially requested to be developed in PHP, but it has been converted to Go for implementation.
 
 ## Requirements
 
