@@ -48,5 +48,17 @@ This project implements an API task with CRUD operations using the Go programmin
     - `CATCH /{id}` - Update a structure by ID
     - `DELETE /{id}` - Update a structure status by ID 
 
-   
+## Migration from PHP to Go
+
+The original API task was developed in PHP, but it has been migrated to Go for implementation. The conversion process involved the following steps:
+
+1. Rewriting the API endpoints in Go using the Go Fiber framework.
+2. Updating the database access code to use the Go SQL package and SQLite.
+3. Converting PHP-specific code to equivalent Go code.
+4. Handling error cases and updating error handling mechanisms.
+5. Rebuilding and testing the application in Go.
+
+Please refer to the codebase for the complete Go implementation of the API task.
+
+
 
