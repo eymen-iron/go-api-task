@@ -24,4 +24,5 @@ func SetupRoutes(app *fiber.App, db *sql.DB) {
 	app.Get("/", GetAll)
 	app.Get("/:id", GetSingle)
 	app.Patch("/:id", UpdateByID)
+	app.Delete("/:id", DeleteByID)
 }
